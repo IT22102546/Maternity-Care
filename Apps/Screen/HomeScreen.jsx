@@ -1,12 +1,10 @@
 import { View, ScrollView } from 'react-native';
 import Header from '../Components/HomeScreen/Header';
-import Slider from '../Components/HomeScreen/Slider';
 import { collection, getDocs, getFirestore, orderBy } from 'firebase/firestore';
 import { app } from '../../firebaseConfig';
 import { useEffect, useState } from 'react';
 import tw from 'twrnc';
-import Categories from '../Components/HomeScreen/Categories';
-import LatestItemList from '../Components/HomeScreen/LatestItemList';
+
 
 export default function HomeScreen() {
   const db = getFirestore(app);
@@ -52,9 +50,9 @@ export default function HomeScreen() {
   return (
     <ScrollView style={tw`p-6 bg-white flex-1`}>
       <Header />
-      <Slider sliderList={sliderList} />
+      {/* <Slider sliderList={sliderList} />
       <Categories categoryList={categoryList} />
-      <LatestItemList latestItemList={latestItemList} heading={'Latest Items'} />
+      <LatestItemList latestItemList={latestItemList} heading={'Latest Items'} /> */}
     </ScrollView>
   );
 }
