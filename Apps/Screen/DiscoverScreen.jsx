@@ -4,8 +4,8 @@ import { ScrollView } from 'react-native-gesture-handler'
 
 export default function DiscoverScreen() {
   return (
-   <ScrollView>
-    <Text>Hello World</Text>
-   </ScrollView>
+ 
+    <Text>Hello World </Text>
+  
   )
 }

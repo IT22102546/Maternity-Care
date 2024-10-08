@@ -2,7 +2,6 @@ import React from 'react';
 import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
 import HomeScreenStackNav from './HomeScreenStackNav';  // Stack for Home/Today screen
 import ToolsScreenStackNav from './ToolsScreenStackNav';  // Stack for Tools section
 import ProfileScreenStackNav from './ProfileScreenStackNav';  // Stack for Profile

@@ -8,6 +8,7 @@ import AppointmentsScreen from '../Screen/AppointmentsScreen';
 import ExersiceDetailScreen from '../Screen/ExersiceDetailScreen';
 import HospitalBagScreen from '../Screen/HospitalBagScreen';
 import NutritionTrackingScreen from '../Screen/NutritionTrackingScreen';
+import DiscoverScreen from '../Screen/DiscoverScreen';
 
 const Stack = createStackNavigator();
 
