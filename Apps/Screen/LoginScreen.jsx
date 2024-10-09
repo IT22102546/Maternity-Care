@@ -1,13 +1,13 @@
-import { View, Text, Image, Button, TouchableOpacity } from 'react-native'
-import React from 'react'
-import * as WebBrowser from 'expo-web-browser'
-import { useWamUpBrowser } from '../../hooks/useWarmUpBrowser'
-import { useOAuth } from '@clerk/clerk-expo'
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { useWamUpBrowser } from '../../hooks/useWarmUpBrowser';
+import { useOAuth } from '@clerk/clerk-expo';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-    useWamUpBrowser();
+  useWamUpBrowser();
 
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
@@ -16,27 +16,72 @@ export default function LoginScreen() {
       const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
 
       if (createdSessionId) {
-        setActive({ session: createdSessionId })
+        setActive({ session: createdSessionId });
       } else {
         // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
-      console.error('OAuth error', err)
+      console.error('OAuth error', err);
     }
-  }, [])
+  }, []);
 
   return (
-    <View>
-     <Image source={require('./../../assets/images/loginimage.jpg')}
-        className="w-full h-[300px] object-cover"
-     />
-     <View className="p-7 bg-white mt-[-20px] rounded-t-3xl shadow-md">
-        <Text className="text-[35px] font-bold text-center">Online Market Place</Text>
-        <Text className="text-[18px] text-slate-400 mt-7 text-center"> Buy everything you need online and get your stuffs to your Door steps</Text>
-        <TouchableOpacity onPress={onPress} className="p-3 bg-blue-500 rounded-full mt-28">
-            <Text className="text-center text-white text-[18px] ">Get Started</Text>
+    <ImageBackground
+      source={{ uri: 'https://png.pngtree.com/thumb_back/fw800/back_our/20190622/ourmid/pngtree-mother-s-day-pregnant-mom-background-image_215277.jpg' }}
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Maternity Care</Text>
+        <Text style={styles.subtitle}>
+          Taking care of you and your baby, every step of the way
+        </Text>
+
+        {/* Get Started Button */}
+        <TouchableOpacity onPress={onPress} style={styles.button}>
+          <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
-     </View>
-    </View>
-  )
+      </View>
+    </ImageBackground>
+  );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light overlay for better text visibility
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#E91E63', // Soft pink title color
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  button: {
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    backgroundColor: '#E91E63', // Pink button for call-to-action
+    borderRadius: 30,
+    elevation: 5,
+    shadowColor: '#000',
+  },
+  buttonText: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+  },
+});
