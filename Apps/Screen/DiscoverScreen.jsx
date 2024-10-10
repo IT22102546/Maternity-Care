@@ -14,6 +14,7 @@ export default function DiscoverScreen() {
   const [categories] = useState(['All-Articles', 'Nutrition', 'Exercises', 'Symptoms']);
   const [selectedCategory, setSelectedCategory] = useState('All-Articles');
   const [translateToSinhala, setTranslateToSinhala] = useState(false);
+  const [translatedArticles, setTranslatedArticles] = useState({});
   const db = getFirestore(app);
   const { width } = useWindowDimensions();
 
@@ -50,6 +51,7 @@ export default function DiscoverScreen() {
 
   const handleBackArrowPress = () => {
     setExpandedArticle(null);
+    setTranslateToSinhala(false); // Reset translation state when going back
   };
 
   const handleCategorySelect = (category) => {
@@ -82,39 +84,42 @@ export default function DiscoverScreen() {
       return text; // Fallback to original text
     }
   };
-  
+
   const translateArticleData = async (article) => {
-    if (translateToSinhala) {
-      try {
-        const translatedTitle = await translateText(article.title, 'si');
-        const translatedDesc = await translateText(article.desc, 'si');
-        return {
-          ...article,
-          title: translatedTitle,
-          desc: translatedDesc,
-        };
-      } catch (error) {
-        console.error('Error translating article:', error.message);
-        return article; // Fallback to original article if translation fails
-      }
+    try {
+      const translatedTitle = await translateText(article.title, 'si');
+      const translatedDesc = await translateText(article.desc, 'si');
+      return {
+        ...article,
+        title: translatedTitle,
+        desc: translatedDesc,
+      };
+    } catch (error) {
+      console.error('Error translating article:', error.message);
+      return article; // Fallback to original article if translation fails
     }
-    return article;
   };
 
-  useEffect(() => {
-    const translateArticles = async () => {
-      if (translateToSinhala) {
-        const translatedArticles = await Promise.all(
-          articles.map(article => translateArticleData(article))
-        );
-        setArticles(translatedArticles);
-      } else {
-        fetchArticles(); // If switching back to English, re-fetch the original articles
-      }
-    };
+  const handleArticlePress = async (article) => {
+    if (expandedArticle === article.id) {
+      setExpandedArticle(null);
+      return;
+    }
+    
+    setExpandedArticle(article.id);
+    setTranslateToSinhala(false); // Reset translation state when a new article is expanded
+  };
 
-    translateArticles();
-  }, [translateToSinhala]);
+  const handleTranslatePress = async () => {
+    if (expandedArticle !== null) {
+      const currentArticle = articles.find(article => article.id === expandedArticle);
+      if (currentArticle && !translatedArticles[expandedArticle]) {
+        const translatedData = await translateArticleData(currentArticle);
+        setTranslatedArticles(prev => ({ ...prev, [expandedArticle]: translatedData }));
+      }
+      setTranslateToSinhala(prev => !prev); // Toggle translation state
+    }
+  };
 
   if (loading) {
     return (
@@ -156,32 +161,37 @@ export default function DiscoverScreen() {
           </View>
 
           {/* Articles */}
-          {filteredArticles.map(article => (
-            <View key={article.id} style={styles.articleCard}>
-              <TouchableOpacity onPress={() => toggleExpandArticle(article.id)}>
-                <Text style={styles.articleTitle}>
-                  {article.title}
-                </Text>
-                <Image
-                  source={{ uri: article.image }}
-                  style={styles.articleImage}
-                />
-              </TouchableOpacity>
-              {expandedArticle === article.id && (
-                <View style={styles.articleContent}>
-                  <RenderHTML
-                    contentWidth={width}
-                    source={{ html: article.desc }}
+          {filteredArticles.map(article => {
+            const isExpanded = expandedArticle === article.id;
+            const displayedArticle = isExpanded && translateToSinhala && translatedArticles[article.id] ? translatedArticles[article.id] : article;
+
+            return (
+              <View key={article.id} style={styles.articleCard}>
+                <TouchableOpacity onPress={() => handleArticlePress(article)}>
+                  <Text style={styles.articleTitle}>
+                    {displayedArticle.title}
+                  </Text>
+                  <Image
+                    source={{ uri: displayedArticle.image }}
+                    style={styles.articleImage}
                   />
-                </View>
-              )}
-            </View>
-          ))}
+                </TouchableOpacity>
+                {isExpanded && (
+                  <View style={styles.articleContent}>
+                    <RenderHTML
+                      contentWidth={width}
+                      source={{ html: displayedArticle.desc }}
+                    />
+                  </View>
+                )}
+              </View>
+            );
+          })}
 
           {/* Floating Translate Button */}
           <TouchableOpacity
             style={styles.translateButton}
-            onPress={() => setTranslateToSinhala(prev => !prev)}
+            onPress={handleTranslatePress}
           >
             <Icon name="globe-outline" size={30} color="#fff" />
           </TouchableOpacity>
