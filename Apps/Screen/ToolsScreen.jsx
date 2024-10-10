@@ -12,7 +12,7 @@ export default function ToolsScreen() {
     <ScrollView style={tw`p-6 flex-1 bg-rose-50`}>
       {/* Buttons for Tools */}
       <Header/>
-      <Text style={tw`text-xl mt-5 mb-5`}>Tools for you.</Text>
+      <Text style={tw`text-2xl font-bold mb-6 text-left mt-5 text-rose-600`}>Tools for you.</Text>
         <ToolButton icon="fitness-outline" label="Exercise" onPress={() => navigation.navigate('Exercise')} />
         <ToolButton icon="medkit-outline" label="Symptom Tracking" onPress={() => navigation.navigate('Symptom Tracking')} />
         <ToolButton icon="nutrition-outline" label="Nutrition Tracking" onPress={() => navigation.navigate('Nutrition Tracking')} />
