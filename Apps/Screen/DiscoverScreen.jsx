@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-    position: 'relative', // Added to contain absolute positioned elements
+    position: 'relative', 
   },
   articleImage: {
     width: '100%',
@@ -291,8 +291,8 @@ const styles = StyleSheet.create({
   },
   translateButton: {
     position: 'absolute',
-    bottom: 10, // Adjusted to be at the bottom of the article card
-    right: 10, // Adjusted to be at the right side of the article card
+    bottom: 10, 
+    right: 10, 
     backgroundColor: '#333',
     borderRadius: 30,
     padding: 15,
