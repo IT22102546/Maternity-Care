@@ -66,7 +66,7 @@ export default function DiscoverScreen() {
     try {
       const subscriptionKey = '71cc81d77560489489152b1b7ec074ed';
       const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
-      
+
       const response = await axios.post(endpoint, [{ text: text }], {
         headers: {
           'Ocp-Apim-Subscription-Key': subscriptionKey,
@@ -77,7 +77,7 @@ export default function DiscoverScreen() {
           'to': targetLang,
         }
       });
-      
+
       return response.data[0].translations[0].text;
     } catch (error) {
       console.error('Translation error:', error.message);
@@ -105,7 +105,7 @@ export default function DiscoverScreen() {
       setExpandedArticle(null);
       return;
     }
-    
+
     setExpandedArticle(article.id);
     setTranslateToSinhala(false); // Reset translation state when a new article is expanded
   };
@@ -184,17 +184,19 @@ export default function DiscoverScreen() {
                     />
                   </View>
                 )}
+
+                {/* Floating Translate Button inside the article card */}
+                {isExpanded && (
+                  <TouchableOpacity
+                    style={styles.translateButton}
+                    onPress={handleTranslatePress}
+                  >
+                    <Icon name="globe-outline" size={30} color="#fff" />
+                  </TouchableOpacity>
+                )}
               </View>
             );
           })}
-
-          {/* Floating Translate Button */}
-          <TouchableOpacity
-            style={styles.translateButton}
-            onPress={handleTranslatePress}
-          >
-            <Icon name="globe-outline" size={30} color="#fff" />
-          </TouchableOpacity>
         </ScrollView>
       </View>
     </ImageBackground>
@@ -229,6 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+    position: 'relative', // Added to contain absolute positioned elements
   },
   articleImage: {
     width: '100%',
@@ -276,19 +279,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedCategoryButton: {
-    backgroundColor: '#333',
+    backgroundColor: '#ffcccb',
   },
   categoryText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#000',
   },
   selectedCategoryText: {
     color: '#fff',
   },
   translateButton: {
     position: 'absolute',
-    bottom: 30,
-    right: 30,
+    bottom: 10, // Adjusted to be at the bottom of the article card
+    right: 10, // Adjusted to be at the right side of the article card
     backgroundColor: '#333',
     borderRadius: 30,
     padding: 15,
