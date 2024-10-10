@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const SignUpwithEmail = () => {
+const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);  // State to track focus for email
@@ -16,8 +16,8 @@ const SignUpwithEmail = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Get started</Text>
-      <Text style={styles.subtitle}>Amazing things, just a click away!</Text>
+      <Text style={styles.title}>How Your'e Doing?</Text>
+      <Text style={styles.subtitle}>Welcome Back, Mom!</Text>
       
       {/* Email Input */}
       <TextInput
@@ -42,12 +42,12 @@ const SignUpwithEmail = () => {
 
       {/* Sign Up Button */}
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+        <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
-        Already have an account?{' '}
-        <Text style={styles.linkText} onPress={() => navigation.navigate('SignIn')}>
+        Have not an account?{' '}
+        <Text style={styles.linkText} onPress={() => navigation.navigate('SignUpScreenEmail')}>
           Click here
         </Text>
       </Text>
@@ -106,4 +106,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpwithEmail;
+export default SignInScreen;
