@@ -1,16 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { useWamUpBrowser } from '../../hooks/useWarmUpBrowser';
 import { useOAuth } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  useWamUpBrowser();
   const navigation = useNavigation();
-
 
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
@@ -21,12 +18,13 @@ export default function LoginScreen() {
       if (createdSessionId) {
         setActive({ session: createdSessionId });
       } else {
-        // Use signIn or signUp for next steps such as MFA
+        // Handle next steps for sign-in or sign-up flow, such as MFA or incomplete registration
+        console.log('Google OAuth successful, proceed with sign-in/up.');
       }
     } catch (err) {
       console.error('OAuth error', err);
     }
-  }, []);
+  }, [startOAuthFlow]);
 
   return (
     <ImageBackground
@@ -45,7 +43,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
         {/* Get Started Button */}
         <TouchableOpacity onPress={() => navigation.navigate('SignUpScreenEmail')} style={styles.button}>
-          <Text style={styles.buttonText}>Continue  with  Email</Text>
+          <Text style={styles.buttonText}>Continue with Email</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -80,7 +78,7 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 15,
-    marginTop : 10,
+    marginTop: 10,
     paddingHorizontal: 40,
     backgroundColor: '#E91E63', // Pink button for call-to-action
     borderRadius: 30,
