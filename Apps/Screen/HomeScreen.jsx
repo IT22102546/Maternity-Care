@@ -9,7 +9,7 @@ export default function HomeScreen() {
 
   return (
     <>
-    <ScrollView style={tw`flex-1 bg-pink-50 px-5 pt-10`}>
+    <ScrollView style={tw`p-6 flex-1 bg-rose-50`}>
     <Header/>
 
       {/* Large Today Card */}

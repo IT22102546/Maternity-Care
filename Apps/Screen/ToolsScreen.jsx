@@ -9,7 +9,7 @@ export default function ToolsScreen() {
   const navigation = useNavigation(); // Get navigation instance
 
   return (
-    <ScrollView style={tw`p-6 bg-pink-100 flex-1 `}>
+    <ScrollView style={tw`p-6 flex-1 bg-rose-50`}>
       {/* Buttons for Tools */}
       <Header/>
       <Text style={tw`text-xl mt-5 mb-5`}>Tools for you.</Text>
