@@ -3,11 +3,14 @@ import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useWamUpBrowser } from '../../hooks/useWarmUpBrowser';
 import { useOAuth } from '@clerk/clerk-expo';
+import { useNavigation } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   useWamUpBrowser();
+  const navigation = useNavigation();
+
 
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
@@ -31,14 +34,18 @@ export default function LoginScreen() {
       style={styles.background}
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>Maternity Care</Text>
+        <Text style={styles.title}>Maternity Mate</Text>
         <Text style={styles.subtitle}>
           Taking care of you and your baby, every step of the way
         </Text>
 
         {/* Get Started Button */}
         <TouchableOpacity onPress={onPress} style={styles.button}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>Continue with Google</Text>
+        </TouchableOpacity>
+        {/* Get Started Button */}
+        <TouchableOpacity onPress={() => navigation.navigate('SignUpScreenEmail')} style={styles.button}>
+          <Text style={styles.buttonText}>Continue  with  Email</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -73,6 +80,7 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 15,
+    marginTop : 10,
     paddingHorizontal: 40,
     backgroundColor: '#E91E63', // Pink button for call-to-action
     borderRadius: 30,
