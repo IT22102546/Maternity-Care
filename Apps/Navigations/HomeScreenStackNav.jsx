@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import HomeScreen from '../Screen/HomeScreen';  // Your main Home screen
 import OnboardingScreen1 from '../Screen/Onboarding1';
 import OnboardingScreen2 from '../Screen/Onboarding2';
@@ -38,10 +37,12 @@ export default function HomeScreenStackNav() {
           <Stack.Screen name="Onboarding1" component={OnboardingScreen1} options={{ headerShown: false }} />
           <Stack.Screen name="Onboarding2" component={OnboardingScreen2} options={{ headerShown: false }} />
           <Stack.Screen name="SignUpScreenEmail" component={SignUpScreenEmail} options={{ headerShown: false }} />
-          <Stack.Screen name="UserInfo" component={UserInfoScreen} options={{ headerShown: false }} />
+          {/* <Stack.Screen name="UserInfo" component={UserInfoScreen} options={{ headerShown: false }} /> */}
         </>
       )}
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UserInfoInSignUpScreen" component={UserInfoScreen} options={{ headerShown: false }} />
+      
     </Stack.Navigator>
   );
 }
