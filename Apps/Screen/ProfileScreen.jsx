@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Image,
   Alert,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useUser } from "@clerk/clerk-expo"; // Import Clerk for user details
-import { auth, firestore } from "../../firebaseConfig"; // Firebase Auth and Firestore
+import { firestore } from "../../firebaseConfig"; // Firebase Firestore
 import { doc, setDoc } from "firebase/firestore"; // Firestore methods
 import tw from "twrnc";
 
@@ -19,29 +20,48 @@ export default function ProfileScreen({ navigation }) {
   const { user } = useUser(); // Fetch user data from Clerk
   const [age, setAge] = useState("");
   const [firstTimeMom, setFirstTimeMom] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(new Date()); // Use a Date object for the picker
   const [createdBy, setCreatedBy] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false); // Control date picker visibility
 
-  const userId = auth.currentUser?.uid; // Get the current user's ID
+  // Helper function to calculate pregnancy stage from due date
+  const calculatePregnancyStage = (dueDate) => {
+    const now = new Date();
+    const weeks = Math.floor((dueDate - now) / (7 * 24 * 60 * 60 * 1000)); // Convert to weeks
+
+    if (weeks <= 13) return "firstTrimester";
+    if (weeks <= 27) return "secondTrimester";
+    return "thirdTrimester";
+  };
 
   const handleSubmit = async () => {
-    if (!userId) return; // Ensure user is logged in
+    // Validation: Check if user object from Clerk is available
+    if (!user || !user.id) {
+      console.error("User ID not found. The user may not be logged in.");
+      Alert.alert("Error", "User is not logged in or user ID is missing.");
+      return;
+    }
+
+    console.log("User ID from Clerk:", user.id);
+    console.log("Submitting profile update...");
 
     try {
-      // Update user document with additional information
+      // Update user document with additional information in Firestore
       await setDoc(
-        doc(firestore, "users", userId),
+        doc(firestore, "users", user.id), // Use user.id from Clerk to target the correct document
         {
           age,
           firstTimeMom,
-          dueDate,
+          dueDate: dueDate.toISOString().split("T")[0], // Save due date as YYYY-MM-DD
           createdBy,
-          pregnancyStage: calculatePregnancyStage(dueDate), // Automatically calculate pregnancy stage from due date
+          pregnancyStage: calculatePregnancyStage(dueDate), // Automatically calculate pregnancy stage
         },
-        { merge: true }
-      ); // Use merge to avoid overwriting existing fields
+        { merge: true } // Use merge to avoid overwriting existing fields
+      );
 
-      // Navigate to the home screen after submitting info
+      console.log("Document updated successfully");
+
+      // Show success alert and navigate to home screen
       Alert.alert("Success", "Profile updated successfully");
       navigation.navigate("Home");
     } catch (error) {
@@ -50,15 +70,16 @@ export default function ProfileScreen({ navigation }) {
     }
   };
 
-  // Helper function to calculate pregnancy stage from due date
-  const calculatePregnancyStage = (dueDate) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const weeks = Math.floor((due - now) / (7 * 24 * 60 * 60 * 1000)); // Convert to weeks
+  // Handler to show the date picker
+  const showDatePickerHandler = () => {
+    setShowDatePicker(true);
+  };
 
-    if (weeks <= 13) return "firstTrimester";
-    if (weeks <= 27) return "secondTrimester";
-    return "thirdTrimester";
+  // Handle date selection
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || dueDate;
+    setShowDatePicker(Platform.OS === "ios"); // For iOS keep the picker open
+    setDueDate(currentDate); // Set the selected date
   };
 
   return (
@@ -99,13 +120,25 @@ export default function ProfileScreen({ navigation }) {
           <Picker.Item label="No" value="no" />
         </Picker>
 
-        {/* Due Date Input */}
-        <TextInput
-          placeholder="Expected Due Date (YYYY-MM-DD)"
-          style={styles.input}
-          value={dueDate}
-          onChangeText={(text) => setDueDate(text)}
-        />
+        {/* Due Date Picker */}
+        <TouchableOpacity
+          onPress={showDatePickerHandler}
+          style={styles.datePickerButton}
+        >
+          <Text style={styles.buttonText}>
+            {dueDate ? dueDate.toDateString() : "Select Due Date"}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Show DateTimePicker */}
+        {showDatePicker && (
+          <DateTimePicker
+            value={dueDate}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+          />
+        )}
 
         {/* Created By Picker */}
         <Picker
@@ -168,6 +201,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  datePickerButton: {
+    width: "100%",
+    padding: 15,
+    backgroundColor: "gray",
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+  },
   button: {
     width: "100%",
     padding: 15,
@@ -181,3 +222,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
