@@ -10,6 +10,7 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
+import Homeback from "../../assets/homeback.png"
 import { useUser } from "@clerk/clerk-expo"; // Clerk to get user info
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore methods
@@ -50,7 +51,14 @@ export default function HomeScreen() {
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        setUserData(userDoc.data()); // Set user data state
+        const data = userDoc.data();
+        setUserData(data); // Set user data state
+
+        // Check if any of the required fields are missing (age, dueDate, pregnancyStage)
+        if (!data.age || !data.dueDate || !data.pregnancyStage) {
+          // Navigate to the Profile screen if any required fields are missing
+          navigation.navigate("Profile");
+        }
       } else {
         console.log("No such document!");
       }
@@ -69,11 +77,11 @@ export default function HomeScreen() {
     }, [user.id])
   );
 
-  // Toggle display between "weeks left" and "weeks pregnant" every 2 seconds
+  // Toggle display between "weeks left" and "weeks pregnant" every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setDisplayWeeksLeft((prev) => !prev); // Toggle the display state
-    }, 5000); // 2 seconds interval
+    }, 5000); // 5 seconds interval
 
     return () => clearInterval(interval); // Clear the interval when the component unmounts
   }, []);
@@ -90,9 +98,22 @@ export default function HomeScreen() {
   // Handle the case where userData is still not fetched
   if (!userData) {
     return (
-      <View style={tw`flex-1 justify-center items-center`}>
-        <Text>No user data found.</Text>
+      <ImageBackground
+      source={Homeback} // Replace with your image URL
+      style={tw`flex-1 justify-center items-center`}
+    >
+      <View style={tw`w-3/4 bg-white bg-opacity-80 p-4 rounded-lg`}>
+        <Text style={tw`text-3xl font-semibold text-pink-600 text-center`}>Tell us more about you!</Text>
+        <Text style={tw`text-md`}>Let us make things easy for you, just complete your profile!</Text>
+        
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Profile")}
+        >
+          <Text style={styles.buttonText}>Complete Profile</Text>
+        </TouchableOpacity>
       </View>
+    </ImageBackground>
     );
   }
 
@@ -137,7 +158,7 @@ export default function HomeScreen() {
 
           <View style={tw`absolute bottom-3 left-3`}>
             <Text style={tw`text-white text-lg font-bold`}>
-              Week {weeksPregnant|| "N/A"}
+              Week {weeksPregnant || "N/A"}
             </Text>
           </View>
         </View>
@@ -174,19 +195,23 @@ export default function HomeScreen() {
 
       {/* Weeks Card */}
       <View style={tw`bg-white rounded-xl shadow-md mt-5`}>
-      {/* Background Image */}
-      <ImageBackground
-        source={require('../../assets/congrats.png')} // Use require if the image is a local asset
-        style={tw`w-full h-48 justify-center`} // Full width and height for the background
-        imageStyle={tw`rounded-xl`} // Ensure the background image is rounded too
-      >
-        {/* Content on top of the background image */}
-        <View style={tw`flex justify-center items-center`}>
-          <Text style={tw`text-3xl font-bold text-white text-black`}>{weeksPregnant}</Text>
-          <Text style={tw`text-base text-pink-600 font-bold`}>Weeks Pregnant</Text>
-        </View>
-      </ImageBackground>
-    </View>
+        {/* Background Image */}
+        <ImageBackground
+          source={require("../../assets/congrats.png")} // Use require if the image is a local asset
+          style={tw`w-full h-48 justify-center`} // Full width and height for the background
+          imageStyle={tw`rounded-xl`} // Ensure the background image is rounded too
+        >
+          {/* Content on top of the background image */}
+          <View style={tw`flex justify-center items-center`}>
+            <Text style={tw`text-3xl font-bold text-white text-black`}>
+              {weeksPregnant}
+            </Text>
+            <Text style={tw`text-base text-pink-600 font-bold`}>
+              Weeks Pregnant
+            </Text>
+          </View>
+        </ImageBackground>
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -206,11 +231,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
-    marginBottom:40
+    marginBottom: 40,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
   },
 });
-
