@@ -9,6 +9,7 @@ import ExersiceDetailScreen from '../Screen/ExersiceDetailScreen';
 import HospitalBagScreen from '../Screen/HospitalBagScreen';
 import NutritionTrackingScreen from '../Screen/NutritionTrackingScreen';
 
+
 const Stack = createStackNavigator();
 
 export default function ToolsScreenStackNav() {
@@ -19,9 +20,9 @@ export default function ToolsScreenStackNav() {
       <Stack.Screen name="Symptom Tracking" component={SymptomTrackingScreen} />
       <Stack.Screen name="My Weight" component={MyWeightScreen} />
       <Stack.Screen name="Appointments" component={AppointmentsScreen} />
-      <Stack.Screen name="Exersice Details" component={ExersiceDetailScreen} />
       <Stack.Screen name="Nutrition Tracking" component={NutritionTrackingScreen} />
       <Stack.Screen name="Hospital Bag" component={HospitalBagScreen} />
+      <Stack.Screen name="ExerciseDetail" component={ExersiceDetailScreen}/>
       
       {/* Add more tools as needed */}
     </Stack.Navigator>
