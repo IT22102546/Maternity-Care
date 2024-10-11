@@ -11,19 +11,20 @@ export default function ToolsScreen() {
   return (
     <ScrollView style={tw`p-6 flex-1 bg-rose-50`}>
       {/* Buttons for Tools */}
-      <Header/>
-      <Text style={tw`text-2xl font-bold mb-6 text-left mt-5 text-rose-600`}>Tools for you.</Text>
-        <ToolButton icon="fitness-outline" label="Exercise" onPress={() => navigation.navigate('Exercise')} />
-        <ToolButton icon="medkit-outline" label="Symptom Tracking" onPress={() => navigation.navigate('Symptom Tracking')} />
-        <ToolButton icon="nutrition-outline" label="Nutrition Tracking" onPress={() => navigation.navigate('Nutrition Tracking')} />
-        <ToolButton icon="scale-outline" label="My Weight" onPress={() => navigation.navigate('My Weight')} />
-        <ToolButton icon="calendar-outline" label="Appointments" onPress={() => navigation.navigate('Appointments')} />
-        <ToolButton icon="bag-outline" label="Hospital Bag" onPress={() => navigation.navigate('Hospital Bag')} />
-        {/* <ToolButton icon="calendar-outline" label="Make an appointment" onPress={() => navigation.navigate('Navigate to Make an appointment')} /> */}
-      
+      <Header />
+      <Text style={tw`text-2xl font-bold mb-6 text-left mt-5 text-rose-600`}>
+        Tools for you.
+      </Text>
+      <ToolButton icon="fitness-outline" label="Exercise" onPress={() => navigation.navigate('Exercise')} delay={0} />
+      <ToolButton icon="medkit-outline" label="Symptom Tracking" onPress={() => navigation.navigate('Symptom Tracking')} delay={100} />
+      <ToolButton icon="nutrition-outline" label="Nutrition Tracking" onPress={() => navigation.navigate('Nutrition Tracking')} delay={200} />
+      <ToolButton icon="scale-outline" label="My Weight" onPress={() => navigation.navigate('My Weight')} delay={300} />
+      <ToolButton icon="calendar-outline" label="Appointments" onPress={() => navigation.navigate('Appointments')} delay={400} />
+      <ToolButton icon="bag-outline" label="Hospital Bag" onPress={() => navigation.navigate('Hospital Bag')} delay={500} />
     </ScrollView>
   );
 }
+
 
 // Helper component for buttons
 function ToolButton({ icon, label, onPress }) {

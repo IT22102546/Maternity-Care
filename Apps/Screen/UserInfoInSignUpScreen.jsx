@@ -1,22 +1,52 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Picker } from 'react-native';
+import { auth, firestore } from '../../firebaseConfig'; // Import Firebase Auth and Firestore from your firebaseConfig
+import { doc, setDoc } from '../../firebaseConfig'; // Import Firestore methods
 
 const UserInfoInSignUpScreen = ({ navigation }) => {
   const [age, setAge] = useState('');
   const [firstTimeMom, setFirstTimeMom] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [createdBy, setCreatedBy] = useState('');
+  
+  const userId = auth.currentUser?.uid; // Get the current user's ID
 
-  const handleSubmit = () => {
-    // Logic to save user info in database (e.g., Firebase)
-    navigation.navigate('Home');  // Redirect to home screen
+  const handleSubmit = async () => {
+    if (!userId) return; // Ensure user is logged in
+
+    try {
+      // Update user document with additional information
+      await setDoc(doc(firestore, 'users', userId), {
+        age,
+        firstTimeMom,
+        dueDate,
+        createdBy,
+        pregnancyStage: calculatePregnancyStage(dueDate) // Automatically calculate pregnancy stage from due date
+      }, { merge: true }); // Use merge to not overwrite existing fields
+
+      // Navigate to the home screen after submitting info
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error updating user info:', error);
+    }
+  };
+
+  // Helper function to calculate pregnancy stage from due date
+  const calculatePregnancyStage = (dueDate) => {
+    const now = new Date();
+    const due = new Date(dueDate);
+    const weeks = Math.floor((due - now) / (7 * 24 * 60 * 60 * 1000)); // Convert to weeks
+
+    if (weeks <= 13) return 'firstTrimester';
+    if (weeks <= 27) return 'secondTrimester';
+    return 'thirdTrimester';
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add your Info</Text>
       <Text style={styles.subtitle}>Tell us about you!</Text>
-      
+
       <Picker selectedValue={age} onValueChange={(itemValue) => setAge(itemValue)} style={styles.input}>
         <Picker.Item label="Age" value="" />
         <Picker.Item label="20-25" value="20-25" />
