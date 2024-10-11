@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore'; // Added setDoc to write to Firestore
 import { firestore } from '../../firebaseConfig'; // Import Firestore instance from your config
 import { Linking } from 'react-native'; // Import Linking to open URLs
 import { useRoute } from '@react-navigation/native'; // To access route params
+import { getAuth } from 'firebase/auth'; // To get current user
 import tw from 'twrnc';
+import { useUser } from '@clerk/clerk-expo';
 
 export default function ExerciseDetailScreen() {
   const route = useRoute();
   const { exerciseId } = route.params; // Get the exerciseId from route params
   const [exerciseData, setExerciseData] = useState(null); // State to hold exercise details
+  const auth = getAuth(); // Get Firebase Auth instance
+  const { user } = useUser();
+
 
   // Fetch exercise details from Firestore based on the exerciseId
   useEffect(() => {
@@ -42,12 +47,44 @@ export default function ExerciseDetailScreen() {
     }
   };
 
-  // if (!exerciseData) {
-  //   return <Text>Loading...</Text>; // Loading state
-  // }
+  // Function to add exercise to favorites
+  // Function to add exercise to favorites
+const addToFavourites = async () => {
+  try {
+    if (user && exerciseData) {
+      // Use Clerk's user.id instead of Firebase auth.currentUser.uid
+      const userId = user.id; // Clerk user ID
+      
+      // Define reference to the favorites document for the current user
+      const favoritesDocRef = doc(firestore, 'favorites', userId);
+      
+      // Create or update the document with exercise data
+      await setDoc(favoritesDocRef, {
+        [exerciseId]: { // Use the exerciseId as a key to store multiple favorites
+          exerciseName: exerciseData.exerciseName,
+          description: exerciseData.description,
+          duration: exerciseData.duration,
+          ageRange: exerciseData.ageRange,
+          intensity: exerciseData.intensity,
+          pregnancyStage: exerciseData.pregnancyStage,
+          imageUrl: exerciseData.imageUrl,
+          videoUrl: exerciseData.videoUrl,
+        }
+      }, { merge: true }); // Merge the document so it doesn't overwrite existing favorites
+      
+      Alert.alert('Success', 'Exercise added to favorites!');
+    } else {
+      Alert.alert('Error', 'User not logged in or no exercise data available.');
+    }
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    Alert.alert('Error', 'An error occurred while adding to favorites.');
+  }
+};
 
-   // Render a loading spinner while data is being fetched
-   if (!exerciseData) {
+
+  // Render a loading spinner while data is being fetched
+  if (!exerciseData) {
     return (
       <View style={tw`flex-1 justify-center items-center`}>
         <ActivityIndicator size="large" color="#E91E63" />
@@ -98,6 +135,14 @@ export default function ExerciseDetailScreen() {
       >
         <Text style={styles.buttonText}>Watch Video</Text>
       </TouchableOpacity>
+
+      {/* Button to add to favorites */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={addToFavourites}
+      >
+        <Text style={styles.buttonText}>Add to favorites</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -143,7 +188,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E91E63',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 5,
+    
   },
   buttonText: {
     color: 'white',

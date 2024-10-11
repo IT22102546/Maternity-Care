@@ -8,6 +8,7 @@ import AppointmentsScreen from '../Screen/AppointmentsScreen';
 import ExersiceDetailScreen from '../Screen/ExersiceDetailScreen';
 import HospitalBagScreen from '../Screen/HospitalBagScreen';
 import NutritionTrackingScreen from '../Screen/NutritionTrackingScreen';
+import ExerciseFavourite from '../Screen/ExerciseFavourite';
 
 
 const Stack = createStackNavigator();
@@ -23,6 +24,7 @@ export default function ToolsScreenStackNav() {
       <Stack.Screen name="Nutrition Tracking" component={NutritionTrackingScreen} />
       <Stack.Screen name="Hospital Bag" component={HospitalBagScreen} />
       <Stack.Screen name="ExerciseDetail" component={ExersiceDetailScreen}/>
+      <Stack.Screen name="ExerciseFavourite" component={ExerciseFavourite} />
       
       {/* Add more tools as needed */}
     </Stack.Navigator>
