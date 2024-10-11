@@ -124,7 +124,7 @@ export default function DiscoverScreen() {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#E91E63" />
       </View>
     );
   }
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   articleCard: {
-    backgroundColor: '#ffe4e1',
+    backgroundColor: 'pink',
     borderRadius: 15,
     padding: 10,
     marginBottom: 20,
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 10,
+    marginTop:15
   },
   articleTitle: {
     fontSize: 20,
@@ -274,12 +275,12 @@ const styles = StyleSheet.create({
   },
   categoryButton: {
     padding: 10,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'pink',
     borderRadius: 5,
     marginHorizontal: 5,
   },
   selectedCategoryButton: {
-    backgroundColor: '#ffcccb',
+    backgroundColor: '#E91E63',
   },
   categoryText: {
     fontSize: 16,
