@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, ImageBackground } from 'react-native';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { app } from '../../firebaseConfig';
-import RenderHTML from 'react-native-render-html'; 
-import { useWindowDimensions } from 'react-native'; 
-import Icon from 'react-native-vector-icons/Ionicons'; 
+import RenderHTML from 'react-native-render-html';
+import { useWindowDimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 export default function DiscoverScreen() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedArticle, setExpandedArticle] = useState(null); 
-  const [categories, setCategories] = useState(['All-Articles', 'Nutrition', 'Exercises', 'Symptoms']); 
-  const [selectedCategory, setSelectedCategory] = useState('All-Articles'); 
-  const [translateToSinhala, setTranslateToSinhala] = useState(false); 
+  const [expandedArticle, setExpandedArticle] = useState(null);
+  const [categories] = useState(['All-Articles', 'Nutrition', 'Exercises', 'Symptoms']);
+  const [selectedCategory, setSelectedCategory] = useState('All-Articles');
+  const [translateToSinhala, setTranslateToSinhala] = useState(false);
+  const [translatedArticles, setTranslatedArticles] = useState({});
   const db = getFirestore(app);
-  const { width } = useWindowDimensions(); 
+  const { width } = useWindowDimensions();
+
+  // Hard-coded translations for categories
+  const categoryTranslations = {
+    'All-Articles': 'සියලු ලිපි',
+    'Nutrition': 'සෞඛ්‍යය',
+    'Exercises': 'ව්‍යායාම',
+    'Symptoms': 'රෝග',
+  };
 
   useEffect(() => {
     fetchArticles();
@@ -36,40 +46,79 @@ export default function DiscoverScreen() {
   };
 
   const toggleExpandArticle = (id) => {
-    setExpandedArticle(expandedArticle === id ? null : id); 
+    setExpandedArticle(expandedArticle === id ? null : id);
   };
 
   const handleBackArrowPress = () => {
-    setExpandedArticle(null); 
+    setExpandedArticle(null);
+    setTranslateToSinhala(false); // Reset translation state when going back
   };
 
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category); 
+    setSelectedCategory(category);
   };
 
-  const filteredArticles = articles.filter(article => 
+  const filteredArticles = articles.filter(article =>
     selectedCategory === 'All-Articles' || article.category === selectedCategory
   );
 
-  // Mock translation function
-  const mockTranslate = (text) => {
-    const translations = {
-      'Nutrition': 'ආහාර විශේෂණය',
-      'Exercises': 'කර්ම',
-      'Symptoms': 'රෝග ලක්ෂණ',
-      'All-Articles': 'සියලු ලිපි',
-      
-    };
-    return translations[text] || text;
+  const translateText = async (text, targetLang) => {
+    try {
+      const subscriptionKey = '71cc81d77560489489152b1b7ec074ed';
+      const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
+
+      const response = await axios.post(endpoint, [{ text: text }], {
+        headers: {
+          'Ocp-Apim-Subscription-Key': subscriptionKey,
+          'Content-Type': 'application/json',
+          'Ocp-Apim-Subscription-Region': 'swedencentral',
+        },
+        params: {
+          'to': targetLang,
+        }
+      });
+
+      return response.data[0].translations[0].text;
+    } catch (error) {
+      console.error('Translation error:', error.message);
+      return text; // Fallback to original text
+    }
   };
 
-  // Function to translate article data
-  const translateArticleData = (article) => {
-    return {
-      ...article,
-      title: translateToSinhala ? mockTranslate(article.title) : article.title,
-      desc: translateToSinhala ? mockTranslate(article.desc) : article.desc,
-    };
+  const translateArticleData = async (article) => {
+    try {
+      const translatedTitle = await translateText(article.title, 'si');
+      const translatedDesc = await translateText(article.desc, 'si');
+      return {
+        ...article,
+        title: translatedTitle,
+        desc: translatedDesc,
+      };
+    } catch (error) {
+      console.error('Error translating article:', error.message);
+      return article; // Fallback to original article if translation fails
+    }
+  };
+
+  const handleArticlePress = async (article) => {
+    if (expandedArticle === article.id) {
+      setExpandedArticle(null);
+      return;
+    }
+
+    setExpandedArticle(article.id);
+    setTranslateToSinhala(false); // Reset translation state when a new article is expanded
+  };
+
+  const handleTranslatePress = async () => {
+    if (expandedArticle !== null) {
+      const currentArticle = articles.find(article => article.id === expandedArticle);
+      if (currentArticle && !translatedArticles[expandedArticle]) {
+        const translatedData = await translateArticleData(currentArticle);
+        setTranslatedArticles(prev => ({ ...prev, [expandedArticle]: translatedData }));
+      }
+      setTranslateToSinhala(prev => !prev); // Toggle translation state
+    }
   };
 
   if (loading) {
@@ -81,72 +130,91 @@ export default function DiscoverScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {expandedArticle && (
-        <TouchableOpacity style={styles.backButton} onPress={handleBackArrowPress}>
-          <Icon name="arrow-back" size={30} color="#000" />
-          <Text style={styles.backButtonText}>
-            {translateToSinhala ? mockTranslate('Back') : 'Back'}
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Category Selection */}
-      <View style={styles.categoryContainer}>
-        {categories.map((category, index) => (
-          <TouchableOpacity 
-            key={index} 
-            style={[styles.categoryButton, selectedCategory === category && styles.selectedCategoryButton]}
-            onPress={() => handleCategorySelect(category)}
-          >
-            <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
-              {translateToSinhala ? mockTranslate(category) : category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Articles */}
-      {filteredArticles.map(article => {
-        const translatedArticle = translateArticleData(article); // Get translated article
-        return (
-          <View key={article.id} style={styles.articleCard}>
-            <TouchableOpacity onPress={() => toggleExpandArticle(article.id)}>
-              <Text style={styles.articleTitle}>
-                {translatedArticle.title}
+    <ImageBackground
+      source={{ uri: 'https://i.pinimg.com/736x/84/a8/1d/84a81db7fae81f0db04554ea694ff796.jpg' }}
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <ScrollView style={styles.container}>
+          {expandedArticle && (
+            <TouchableOpacity style={styles.backButton} onPress={handleBackArrowPress}>
+              <Icon name="arrow-back" size={30} color="#000" />
+              <Text style={styles.backButtonText}>
+                {translateToSinhala ? 'ආපසු' : 'Back'}
               </Text>
-              <Image
-                source={{ uri: article.image }}
-                style={styles.articleImage}
-              />
             </TouchableOpacity>
-            {expandedArticle === article.id && (
-              <View style={styles.articleContent}>
-                <RenderHTML
-                  contentWidth={width}
-                  source={{ html: translatedArticle.desc }} 
-                />
-              </View>
-            )}
-          </View>
-        );
-      })}
+          )}
 
-      {/* Floating Translate Button */}
-      <TouchableOpacity 
-        style={styles.translateButton} 
-        onPress={() => setTranslateToSinhala(prev => !prev)}
-      >
-        <Icon name="globe-outline" size={30} color="#fff" />
-      </TouchableOpacity>
-    </ScrollView>
+          {/* Category Selection */}
+          <View style={styles.categoryContainer}>
+            {categories.map((category, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.categoryButton, selectedCategory === category && styles.selectedCategoryButton]}
+                onPress={() => handleCategorySelect(category)}
+              >
+                <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
+                  {translateToSinhala ? categoryTranslations[category] : category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Articles */}
+          {filteredArticles.map(article => {
+            const isExpanded = expandedArticle === article.id;
+            const displayedArticle = isExpanded && translateToSinhala && translatedArticles[article.id] ? translatedArticles[article.id] : article;
+
+            return (
+              <View key={article.id} style={styles.articleCard}>
+                <TouchableOpacity onPress={() => handleArticlePress(article)}>
+                  <Text style={styles.articleTitle}>
+                    {displayedArticle.title}
+                  </Text>
+                  <Image
+                    source={{ uri: displayedArticle.image }}
+                    style={styles.articleImage}
+                  />
+                </TouchableOpacity>
+                {isExpanded && (
+                  <View style={styles.articleContent}>
+                    <RenderHTML
+                      contentWidth={width}
+                      source={{ html: displayedArticle.desc }}
+                    />
+                  </View>
+                )}
+
+                {/* Floating Translate Button inside the article card */}
+                {isExpanded && (
+                  <TouchableOpacity
+                    style={styles.translateButton}
+                    onPress={handleTranslatePress}
+                  >
+                    <Icon name="globe-outline" size={30} color="#fff" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    
+  },
   container: {
     padding: 10,
-    backgroundColor: '#f0f0f0',
   },
   loaderContainer: {
     flex: 1,
@@ -154,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   articleCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffe4e1',
     borderRadius: 15,
     padding: 10,
     marginBottom: 20,
@@ -163,6 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+    position: 'relative', 
   },
   articleImage: {
     width: '100%',
@@ -182,7 +251,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    paddingTop: 20, // Added padding at the top for the back button
+    paddingTop: 20,
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 15,
@@ -201,7 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15,
-    paddingTop: 20, // Add padding at the top
+    paddingTop: 20,
   },
   categoryButton: {
     padding: 10,
@@ -210,19 +279,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedCategoryButton: {
-    backgroundColor: '#333',
+    backgroundColor: '#ffcccb',
   },
   categoryText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#000',
   },
   selectedCategoryText: {
     color: '#fff',
   },
   translateButton: {
     position: 'absolute',
-    bottom: 30,
-    right: 30,
+    bottom: 10, 
+    right: 10, 
     backgroundColor: '#333',
     borderRadius: 30,
     padding: 15,
