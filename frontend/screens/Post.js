@@ -17,8 +17,6 @@ const Post = ({ navigation }) => {
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-  
-
     const uploadImage = async () => {
         setUploading(true);
         const response = await fetch(image.uri);
@@ -129,12 +127,12 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#1E90FF', // DodgerBlue for the heading
+        color: '#E91E63', // Changed to E91E63
         marginBottom: 20,
         textTransform: 'uppercase',
         textAlign: 'center',
         borderBottomWidth: 2,
-        borderBottomColor: '#1E90FF',
+        borderBottomColor: '#E91E63', // Changed to E91E63
         letterSpacing: 1.5,
     },
     inputBox: {
@@ -145,7 +143,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         fontSize: 16,
         color: '#333',
-        borderColor: '#1E90FF', // DodgerBlue for input border
+        borderColor: '#E91E63', // Changed to E91E63
         borderWidth: 2,
         width: '100%',
         shadowColor: '#000',
@@ -154,7 +152,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
     },
     postbtn: {
-        backgroundColor: '#1E90FF', // DodgerBlue for the button
+        backgroundColor: '#E91E63', // Changed to E91E63
         width: '80%',
         paddingVertical: 15,
         borderRadius: 15,

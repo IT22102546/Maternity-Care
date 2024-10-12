@@ -1,39 +1,36 @@
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import moment from 'moment';
 
 const PostCard = ({ posts }) => {
   return (
-   
-      <View style={styles.overlay}>
-        <Text style={styles.heading}>Available Doctors: {posts?.length}</Text>
-        {posts?.map((post, i) => (
-          <View style={styles.card} key={i}>
-            <Text style={styles.title}>Doctor Name: {post?.name}</Text>
-            <Text style={styles.specialization}>Specialization: {post?.specialization}</Text>
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{post?.postedBy?.name}</Text>
-              <Text style={styles.date}>{moment(post?.createdAt).format("DD-MM-YYYY")}</Text>
-            </View>
+    <View style={styles.overlay}>
+      <Text style={styles.heading}>Available Doctors: {posts?.length}</Text>
+      {posts?.map((post, i) => (
+        <View style={styles.card} key={i}>
+          <Text style={styles.title}>Doctor Name: {post?.name}</Text>
+          <Text style={styles.specialization}>Specialization: {post?.specialization}</Text>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{post?.postedBy?.name}</Text>
+            <Text style={styles.date}>{moment(post?.createdAt).format("DD-MM-YYYY")}</Text>
           </View>
-        ))}
-      </View>
-  
+        </View>
+      ))}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
- 
   overlay: {
     flex: 1,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'rgba(10, 25, 47, 1)', // Dark blue background with full opacity
+    backgroundColor: "#E91E63",
   },
   heading: {
-    color: '#ffebcd', // Soft beige color for better contrast against the dark blue
+    color: '#ffebcd',
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -46,7 +43,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '90%',
-    backgroundColor: 'rgba(0, 102, 204, 0.85)', // Darker blue with transparency for the card background
+    backgroundColor: 'white',
     borderRadius: 15,
     padding: 20,
     marginVertical: 15,
@@ -55,17 +52,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 8,
+  
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#f0f8ff', // AliceBlue for a subtle light text effect
+    color: 'black',
     marginBottom: 10,
     textTransform: 'uppercase',
   },
   specialization: {
     fontSize: 18,
-    color: '#add8e6', // Light blue for specialization text
+    color: 'black',
     marginBottom: 15,
   },
   userInfo: {
@@ -74,22 +72,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#dcdcdc', // Light gray border for the separator
+    borderTopColor: '#dcdcdc',
     paddingTop: 15,
   },
   userName: {
     fontSize: 16,
-    color: '#ffffff', // Pure white for the username
+    color: '#ffffff',
     fontStyle: 'italic',
   },
   date: {
     fontSize: 14,
-    color: '#f0f8ff', // Light blue color for date text
+    color: '#f0f8ff',
   },
-
 });
-
-
-
 
 export default PostCard;

@@ -6,7 +6,7 @@ import FootMenu from '../componenet/Menus/FootMenu';
 
 const Account = () => {
     const [state, setState] = useContext(AuthContext);
-    const { user,token } = state;
+    const { user, token } = state;
     const [name, setName] = useState(user?.name);
     const [password, setPassword] = useState(user?.password);
     const [email] = useState(user?.email);
@@ -17,11 +17,10 @@ const Account = () => {
             setLoading(true);
             const { data } = await axios.put("/auth/update-user", {
                 name, email, password
-            }
-            );
+            });
             setLoading(false);
-            const updateedUser = data.updateedUser;
-            setState({ ...state, user: updateedUser });
+            const updatedUser = data.updatedUser;
+            setState({ ...state, user: updatedUser });
             alert(data && data.message);
         } catch (error) {
             alert(error.response.data.message);
@@ -50,7 +49,7 @@ const Account = () => {
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputText}>Password</Text>
-                    <TextInput style={styles.inputBox} value={password}  onChangeText={(text) => setPassword(text)} />
+                    <TextInput style={styles.inputBox} value={password} onChangeText={(text) => setPassword(text)} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     updateButton: {
-        backgroundColor: "blue",
+        backgroundColor: "#E91E63", // Changed to the new color
         color: "white",
         height: 40,
         width: 250,

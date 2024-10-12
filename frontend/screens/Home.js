@@ -14,7 +14,7 @@ const Home = () => {
       <PostCard posts={posts}/>
    
       </ScrollView>
-      <View style={{backgroundColor:"#ffffff"}}>
+      <View style={{backgroundColor:"#E91E63"}}>
       <FootMenu/>
       </View>
      

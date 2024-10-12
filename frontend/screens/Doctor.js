@@ -41,7 +41,6 @@ const Doctor = ({ navigation }) => {
         <ImageBackground source={require('../assets/doctor.jpg')} style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.inputContainer}>
-                    {/* //<Text style={styles.heading}>Create a Doctor Schedule</Text> */}
                     <TextInput
                         style={styles.inputBox}
                         placeholder="Enter Doctor Name"
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
         textShadowColor: '#000', // Black shadow for better readability
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 5,
-        backgroundColor: 'rgba(0, 123, 255, 0.7)', // Semi-transparent blue background
+        backgroundColor: 'rgba(233, 30, 99, 0.7)', // Semi-transparent background with new color
         padding: 15, // Padding for better spacing
         borderRadius: 10, // Rounded corners for a softer look
         alignSelf: 'stretch', // Stretch to fill the width of the container
@@ -114,8 +113,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingBottom: 20,
         marginTop: '40%',
-        width:'100%',
-      // Adds space above the container for better layout
+        width: '100%',
     },
     
     inputBox: {
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
         width: '90%', // Set to 90% of the container's width for responsiveness
         padding: 15, // Increased padding for better touch target
         fontSize: 16,
-        borderColor: '#007BFF', // Blue border color for an appealing look
+        borderColor: '#E91E63', // New border color
         borderWidth: 2, // Slightly thicker border
         borderRadius: 10, // Rounded corners
         shadowColor: '#000', // Shadow color
@@ -143,7 +141,7 @@ const styles = StyleSheet.create({
         width: '90%',
     },
     postbtn: {
-        backgroundColor: '#007BFF', // Bootstrap primary color
+        backgroundColor: '#E91E63', // New background color
         width: '90%', // Responsive width
         height: 50, // Increased height for better touch area
         borderRadius: 5,
